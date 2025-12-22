@@ -1,0 +1,45 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+    .glass {
+        @apply bg-white/30 backdrop-blur-xl border border-white/20 shadow-xl;
+    }
+
+    .glass-dark {
+        @apply bg-gray-900/60 backdrop-blur-md border border-white/10 shadow-xl text-white;
+    }
+
+    .text-gradient {
+        @apply bg-clip-text text-transparent bg-gradient-to-r from-primary-600 to-accent-600;
+    }
+}
+
+body {
+    /* Vibrant, Warm & Energetic Background - Stronger Colors */
+    background-color: #fdf2f8;
+    /* Pink-50 as base */
+    background-image:
+        radial-gradient(at 0% 0%, hsla(22, 100%, 65%, 0.8) 0px, transparent 50%),
+        /* Vibrant Orange */
+        radial-gradient(at 100% 0%, hsla(180, 100%, 45%, 0.8) 0px, transparent 50%),
+        /* Deep Cyan */
+        radial-gradient(at 100% 100%, hsla(330, 100%, 65%, 0.8) 0px, transparent 50%),
+        /* Hot Pink */
+        radial-gradient(at 0% 100%, hsla(260, 100%, 70%, 0.8) 0px, transparent 50%);
+    /* Purple */
+    background-attachment: fixed;
+    @apply text-gray-800 antialiased selection:bg-orange-200 selection:text-orange-900;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: 'Outfit', sans-serif;
+}
