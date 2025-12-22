@@ -93,6 +93,10 @@ const VerificationDashboard = () => {
                                         <span className="truncate">ID: {ngo.organizationId || 'N/A'}</span>
                                     </div>
                                     <div className="flex items-center gap-2">
+                                        <MapPin className="h-4 w-4" />
+                                        <span className="truncate">{ngo.fullAddress || ngo.address || ngo.city || 'Address N/A'}</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
                                         <Calendar className="h-4 w-4" />
                                         <span>Applied: {new Date(ngo.createdAt).toLocaleDateString()}</span>
                                     </div>
