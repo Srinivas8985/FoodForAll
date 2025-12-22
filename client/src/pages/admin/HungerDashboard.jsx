@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import Heatmap from '../../Components/Map/Heatmap';
+import Heatmap from '../../components/Map/Heatmap';
 
 const HungerDashboard = () => {
     const [heatmapData, setHeatmapData] = useState([]);
