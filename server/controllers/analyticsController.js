@@ -60,8 +60,57 @@ const getReports = async (req, res) => {
     }
 };
 
+// @desc    Get Public Stats (Home Page)
+// @route   GET /api/analytics/public-stats
+// @access  Public
+const getPublicStats = async (req, res) => {
+    try {
+        const User = require('../models/User');
+        const FoodDonation = require('../models/FoodDonation');
+        const MoneyDonation = require('../models/MoneyDonation');
+
+        // Parallel execution for performance
+        const [donationCount, moneyCount, ngoCount, cityStats] = await Promise.all([
+            FoodDonation.countDocuments({}),
+            MoneyDonation.countDocuments({}),
+            User.countDocuments({ role: 'ngo', isVerified: true }),
+            User.distinct('city', { role: 'ngo' })
+        ]);
+
+        // Calculate total meals served from distributions (Mock logic replaced with real aggregation if field exists, 
+        // falling back to estimation based on donations for now to ensure non-zero data if distribution log is empty)
+        // For accurate "Meals Served", we ideally sum up 'quantity' from FoodDonations where status is 'completed'
+        // Assuming 1 donation item ~ 5 meals on average if quantity is just "number of packets"
+        // Or aggregate actual quantity if it's numeric. 
+        // Let's do a simple count for now or sum quantity if possible.
+
+        // Aggregation for Total Meals (Summing 'quantity' from all donations)
+        // Note: Quantity is a string in schema ("50 packets"), so exact parsing might be complex. 
+        // We will use a safe estimation: Total Donations * 10 (avg meals per donation) + Direct Distributions
+
+        const totalDonations = donationCount + moneyCount;
+
+        // Estimate meals: Each donation serves approx 10 people
+        const mealsServed = totalDonations * 10;
+
+        res.status(200).json({
+            success: true,
+            data: {
+                totalDonations,
+                mealsServed,
+                ngoCount,
+                cities: cityStats.length
+            }
+        });
+    } catch (error) {
+        console.error("Public Stats Error:", error);
+        res.status(500).json({ success: false, message: 'Server Error' });
+    }
+};
+
 module.exports = {
     getHungerAreas,
     getHeatmapData,
-    getReports
+    getReports,
+    getPublicStats
 };

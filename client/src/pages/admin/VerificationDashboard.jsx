@@ -83,8 +83,9 @@ const VerificationDashboard = () => {
                                         Pending
                                     </span>
                                 </div>
-                                <h3 className="text-xl font-bold text-gray-900 mb-1 line-clamp-1">{ngo.organizationName}</h3>
-                                <p className="text-sm text-gray-500 mb-4">{ngo.city}</p>
+                                <h3 className="text-xl font-bold text-gray-900 mb-1 line-clamp-1">{ngo.organizationName || ngo.name || 'Unnamed Organization'}</h3>
+                                <p className="text-sm text-gray-600 mb-1">Rep: {ngo.name}</p>
+                                <p className="text-sm text-gray-500 mb-4">{ngo.city || 'Location N/A'}</p>
 
                                 <div className="space-y-2 text-sm text-gray-600">
                                     <div className="flex items-center gap-2">
@@ -129,7 +130,7 @@ const VerificationDashboard = () => {
                             <div className="p-8">
                                 <div className="flex justify-between items-start mb-6">
                                     <div>
-                                        <h2 className="text-2xl font-bold text-gray-900">{selectedNGO.organizationName}</h2>
+                                        <h2 className="text-2xl font-bold text-gray-900">{selectedNGO.organizationName || selectedNGO.name}</h2>
                                         <p className="text-gray-500">Applicant ID: {selectedNGO._id}</p>
                                     </div>
                                     <button
@@ -148,15 +149,15 @@ const VerificationDashboard = () => {
                                                 <Building className="w-5 h-5 text-gray-400 flex-shrink-0" />
                                                 <div>
                                                     <p className="text-xs text-gray-500 uppercase">Registration ID</p>
-                                                    <p className="font-medium">{selectedNGO.organizationId}</p>
+                                                    <p className="font-medium">{selectedNGO.organizationId || 'N/A'}</p>
                                                 </div>
                                             </div>
                                             <div className="flex gap-3">
                                                 <MapPin className="w-5 h-5 text-gray-400 flex-shrink-0" />
                                                 <div>
                                                     <p className="text-xs text-gray-500 uppercase">Address</p>
-                                                    <p className="font-medium text-sm">{selectedNGO.fullAddress}</p>
-                                                    <p className="text-sm text-gray-600">{selectedNGO.city} - {selectedNGO.pincode}</p>
+                                                    <p className="font-medium text-sm">{selectedNGO.fullAddress || selectedNGO.address || 'Address not provided'}</p>
+                                                    <p className="text-sm text-gray-600">{selectedNGO.city} {selectedNGO.pincode ? `- ${selectedNGO.pincode}` : ''}</p>
                                                 </div>
                                             </div>
                                             <div className="flex gap-3">

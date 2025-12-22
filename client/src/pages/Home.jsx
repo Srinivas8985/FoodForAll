@@ -1,10 +1,41 @@
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { Heart, Truck, Utensils, ArrowRight, ShieldCheck, Users, Zap } from 'lucide-react';
+import { Truck, ArrowRight, ShieldCheck, Users, Zap } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import heroImage from '../assets/hero-image.jpg';
+import axios from 'axios';
 
 const Home = () => {
     const { user } = useAuth();
+    const [stats, setStats] = useState({
+        totalDonations: 0,
+        mealsServed: 0,
+        ngoCount: 0,
+        cities: 0
+    });
+
+    useEffect(() => {
+        const fetchStats = async () => {
+            try {
+                // Use a direct axios call if auth context api instance requires token, 
+                // or use the base URL from env. Assuming public endpoint doesn't need auth header,
+                // but standard api instance might attach it if available.
+                // Safest is to use the generic axios with the base URL.
+                const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+                const res = await axios.get(`${baseURL}/analytics/public-stats`);
+                if (res.data.success) {
+                    setStats(res.data.data);
+                }
+            } catch (error) {
+                console.error("Failed to fetch public stats", error);
+                // Fallback to some default/minimal stats if fetch fails to avoid empty 0s if desired, 
+                // or just leave as 0.
+            }
+        };
+
+        fetchStats();
+    }, []);
 
     return (
         <div className="min-h-screen bg-transparent pt-20 overflow-x-hidden">
@@ -62,7 +93,7 @@ const Home = () => {
                         >
                             <div className="relative z-10 bg-white/40 backdrop-blur-md rounded-3xl p-6 border border-white/50 shadow-2xl skew-y-1">
                                 <img
-                                    src="https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
+                                    src={heroImage}
                                     alt="Volunteers Distributing Food"
                                     className="rounded-2xl shadow-lg w-full h-[500px] object-cover"
                                 />
@@ -72,7 +103,7 @@ const Home = () => {
                                     </div>
                                     <div>
                                         <p className="text-sm text-gray-500">Live Status</p>
-                                        <p className="font-bold text-gray-900">12 Trucks On Route</p>
+                                        <p className="font-bold text-gray-900">Active Distribution</p>
                                     </div>
                                 </div>
                             </div>
@@ -86,19 +117,19 @@ const Home = () => {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-8 divide-x divide-gray-200/50">
                         <div className="text-center">
-                            <p className="text-4xl font-heading font-bold text-primary-600 mb-1">2.5k+</p>
+                            <p className="text-4xl font-heading font-bold text-primary-600 mb-1">{stats.totalDonations}</p>
                             <p className="text-sm font-semibold tracking-wider text-gray-500 uppercase">Donations</p>
                         </div>
                         <div className="text-center">
-                            <p className="text-4xl font-heading font-bold text-secondary-600 mb-1">15k+</p>
+                            <p className="text-4xl font-heading font-bold text-secondary-600 mb-1">{stats.mealsServed}</p>
                             <p className="text-sm font-semibold tracking-wider text-gray-500 uppercase">Meals Served</p>
                         </div>
                         <div className="text-center">
-                            <p className="text-4xl font-heading font-bold text-gray-800 mb-1">120+</p>
-                            <p className="text-sm font-semibold tracking-wider text-gray-500 uppercase">NGO Partners</p>
+                            <p className="text-4xl font-heading font-bold text-gray-800 mb-1">{stats.ngoCount}</p>
+                            <p className="text-sm font-semibold tracking-wider text-gray-500 uppercase">Active NGOs</p>
                         </div>
                         <div className="text-center">
-                            <p className="text-4xl font-heading font-bold text-green-600 mb-1">500+</p>
+                            <p className="text-4xl font-heading font-bold text-green-600 mb-1">{stats.cities}</p>
                             <p className="text-sm font-semibold tracking-wider text-gray-500 uppercase">Cities</p>
                         </div>
                     </div>

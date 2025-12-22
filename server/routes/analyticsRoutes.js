@@ -6,5 +6,6 @@ const { getHungerAreas, getHeatmapData, getReports } = require('../controllers/a
 router.get('/hunger-areas', protect, authorize('admin', 'ngo'), getHungerAreas);
 router.get('/heatmap-data', protect, authorize('admin', 'ngo'), getHeatmapData);
 router.get('/reports', protect, authorize('admin'), getReports);
+router.get('/public-stats', require('../controllers/analyticsController').getPublicStats);
 
 module.exports = router;
