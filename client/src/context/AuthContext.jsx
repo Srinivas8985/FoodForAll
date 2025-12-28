@@ -5,12 +5,21 @@ import { toast } from 'react-hot-toast';
 const AuthContext = createContext();
 
 // Create axios instance with base URL
-// Create axios instance with base URL
 // Use environment variable or default to localhost
-// Use environment variable or default to localhost
-const environmentURL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-// Remove trailing slash if present to avoid double slashes like .../api//auth
-const baseURL = environmentURL.endsWith('/') ? environmentURL.slice(0, -1) : environmentURL;
+let environmentURL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+
+// Remove trailing slash if present
+if (environmentURL.endsWith('/')) {
+    environmentURL = environmentURL.slice(0, -1);
+}
+
+// Ensure it ends with /api (unless it already does)
+// This handles cases where user provides "https://server.app" instead of "https://server.app/api"
+if (!environmentURL.endsWith('/api')) {
+    environmentURL += '/api';
+}
+
+const baseURL = environmentURL;
 
 const api = axios.create({
     baseURL,
