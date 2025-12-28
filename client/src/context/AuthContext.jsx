@@ -7,7 +7,10 @@ const AuthContext = createContext();
 // Create axios instance with base URL
 // Create axios instance with base URL
 // Use environment variable or default to localhost
-const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+// Use environment variable or default to localhost
+const environmentURL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+// Remove trailing slash if present to avoid double slashes like .../api//auth
+const baseURL = environmentURL.endsWith('/') ? environmentURL.slice(0, -1) : environmentURL;
 
 const api = axios.create({
     baseURL,

@@ -17,7 +17,30 @@ checkExpiry();
 // Middleware
 app.use(express.json());
 app.use(cors({
-    origin: process.env.CLIENT_URL || ['http://localhost:5173', 'http://localhost:5174', 'http://127.0.0.1:5173', 'http://127.0.0.1:5174'],
+    origin: function (origin, callback) {
+        const allowedOrigins = [
+            'http://localhost:5173',
+            'http://localhost:5174',
+            'http://127.0.0.1:5173',
+            'http://127.0.0.1:5174',
+            'https://food-for-all-xoov.vercel.app',
+            'https://food-for-all-frontend.vercel.app',
+            process.env.CLIENT_URL
+        ];
+        // Allow requests with no origin (like mobile apps or curl requests)
+        if (!origin) return callback(null, true);
+        if (allowedOrigins.indexOf(origin) === -1 && !allowedOrigins.includes(origin)) {
+            // Check if specific env CLIENT_URL matches
+            if (process.env.CLIENT_URL && origin === process.env.CLIENT_URL) {
+                return callback(null, true);
+            }
+            // For Vercel preview deployments or other variations, you might want to allow all vercel.app subdomains
+            // but for security, let's stick to the specific documented one plus localhost.
+            // If the user adds more domains, they should be added here.
+            return callback(new Error('The CORS policy for this site does not allow access from the specified Origin.'), false);
+        }
+        return callback(null, true);
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']
