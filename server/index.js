@@ -75,3 +75,5 @@ app.get('/api/system/health', require('./controllers/healthController').checkHea
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
+
+module.exports = app;
