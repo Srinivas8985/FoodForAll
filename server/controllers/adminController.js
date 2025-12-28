@@ -98,10 +98,12 @@ const Alert = require('../models/Alert');
 // @access  Private/Admin
 exports.createFoodDrive = async (req, res) => {
     try {
-        const { areaName, location, plannedMeals, assignedNGOs, driveDate } = req.body;
+        const { areaName, address, pincode, location, plannedMeals, assignedNGOs, driveDate } = req.body;
 
         const foodDrive = await FoodDrive.create({
             areaName,
+            address,
+            pincode,
             location,
             plannedMeals,
             assignedNGOs,

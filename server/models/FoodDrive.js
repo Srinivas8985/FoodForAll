@@ -2,6 +2,8 @@ const mongoose = require("mongoose");
 
 const foodDriveSchema = new mongoose.Schema({
     areaName: String,
+    address: String,
+    pincode: String,
     location: {
         type: { type: String, enum: ["Point"], default: "Point" },
         coordinates: [Number]

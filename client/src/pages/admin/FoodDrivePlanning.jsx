@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { toast } from 'react-hot-toast';
+import { useAuth } from '../../context/AuthContext';
 
 const FoodDrivePlanning = () => {
+    const { api } = useAuth();
     const [hungerAreas, setHungerAreas] = useState([]);
     const [formData, setFormData] = useState({
         areaName: '',
+        address: '',
+        pincode: '',
         lat: '',
         lon: '',
         plannedMeals: '',
@@ -16,19 +19,21 @@ const FoodDrivePlanning = () => {
         // Fetch high hunger score areas to suggest
         const fetchAreas = async () => {
             try {
-                const res = await axios.get('http://localhost:5000/api/analytics/hunger-areas', { withCredentials: true });
+                const res = await api.get('/analytics/hunger-areas');
                 setHungerAreas(res.data.data);
             } catch (error) {
                 console.error(error);
             }
         };
         fetchAreas();
-    }, []);
+    }, [api]);
 
     const handleSelectArea = (area) => {
         setFormData({
             ...formData,
             areaName: area.areaName,
+            address: area.areaName, // Auto-fill address with area name as fallback
+            pincode: '',
             lat: area.location.coordinates[1],
             lon: area.location.coordinates[0],
             plannedMeals: area.totalUnmetDemand // Suggest demand as plan
@@ -45,7 +50,7 @@ const FoodDrivePlanning = () => {
                     coordinates: [parseFloat(formData.lon), parseFloat(formData.lat)]
                 }
             };
-            await axios.post('http://localhost:5000/api/admin/food-drive', payload, { withCredentials: true });
+            await api.post('/admin/food-drive', payload);
             toast.success('Food Drive Planned Successfully!');
         } catch (error) {
             toast.error('Failed to plan drive');
@@ -91,6 +96,29 @@ const FoodDrivePlanning = () => {
                                 className="mt-1 block w-full border border-gray-300 rounded px-3 py-2"
                                 value={formData.areaName}
                                 onChange={(e) => setFormData({ ...formData, areaName: e.target.value })}
+                                required
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700">Address</label>
+                            <input
+                                type="text"
+                                className="mt-1 block w-full border border-gray-300 rounded px-3 py-2"
+                                placeholder="Full address of the drive location"
+                                value={formData.address}
+                                onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                                required
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700">Pincode</label>
+                            <input
+                                type="text"
+                                className="mt-1 block w-full border border-gray-300 rounded px-3 py-2"
+                                placeholder="6-digit pincode"
+                                value={formData.pincode}
+                                onChange={(e) => setFormData({ ...formData, pincode: e.target.value })}
+                                maxLength={6}
                                 required
                             />
                         </div>

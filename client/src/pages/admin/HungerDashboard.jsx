@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import Heatmap from '../../components/Map/Heatmap';
+import { useAuth } from '../../context/AuthContext';
 
 const HungerDashboard = () => {
+    const { api } = useAuth();
     const [heatmapData, setHeatmapData] = useState([]);
     const [stats, setStats] = useState(null);
     const [alerts, setAlerts] = useState([]);
@@ -11,20 +12,20 @@ const HungerDashboard = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const heatRes = await axios.get('http://localhost:5000/api/analytics/heatmap-data', { withCredentials: true });
+                const heatRes = await api.get('/analytics/heatmap-data');
                 setHeatmapData(heatRes.data.data);
 
-                const statsRes = await axios.get('http://localhost:5000/api/admin/analytics', { withCredentials: true });
+                const statsRes = await api.get('/admin/analytics');
                 setStats(statsRes.data.data); // Using existing analytics structure + new items if added
 
-                const alertsRes = await axios.get('http://localhost:5000/api/admin/alerts', { withCredentials: true });
+                const alertsRes = await api.get('/admin/alerts');
                 setAlerts(alertsRes.data.data.filter(a => !a.isResolved));
             } catch (error) {
                 console.error('Error fetching dashboard data', error);
             }
         };
         fetchData();
-    }, []);
+    }, [api]);
 
     return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

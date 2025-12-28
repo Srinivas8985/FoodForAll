@@ -20,6 +20,8 @@ import VerificationDashboard from './pages/admin/VerificationDashboard';
 import FindFood from './pages/public/FindFood';
 import { useAuth } from './context/AuthContext';
 
+import About from './pages/About';
+
 // Protected Route Component
 const ProtectedRoute = ({ children, allowedRoles }) => {
     const { user, loading } = useAuth();
@@ -44,7 +46,7 @@ function App() {
             <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/search-donations" element={<PublicFood />} /> {/* Renamed to avoid conflict */}
-                <Route path="/about" element={<div className="text-center py-20">About Page Coming Soon</div>} />
+                <Route path="/about" element={<About />} />
                 <Route path="/signup" element={<Signup />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/forgot-password" element={<ForgotPassword />} />
