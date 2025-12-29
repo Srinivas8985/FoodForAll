@@ -72,6 +72,16 @@ app.use('/api/ngo', require('./routes/foodAvailabilityRoutes'));
 // System Health Check
 app.get('/api/system/health', require('./controllers/healthController').checkHealth);
 
+// Global Error Handler
+app.use((err, req, res, next) => {
+    console.error('Global Error Handler:', err.stack);
+    res.status(500).json({
+        success: false,
+        message: 'Internal Server Error',
+        error: process.env.NODE_ENV === 'development' ? err.message : undefined
+    });
+});
+
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
