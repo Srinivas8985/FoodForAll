@@ -43,21 +43,27 @@ api.interceptors.response.use(
     (response) => response,
     (error) => {
         if (error.response) {
+            console.error(`API Error [${error.response.status}] ${error.config.url}:`, error.response.data);
+
             // Server responded with error code
             if (error.response.status === 401) {
-                // Unauthorized - clear session and redirect
+                // Unauthorized - clear session but DO NOT hard reload
+                // This prevents infinite loops and clearing console logs
                 localStorage.removeItem('token');
-                // Only redirect if not already on auth pages
+
+                // We dispatch a custom event so the UI can react without a hard reload
+                window.dispatchEvent(new Event('auth:unauthorized'));
+
                 if (!window.location.pathname.includes('/login') && !window.location.pathname.includes('/register')) {
-                    window.location.href = '/login';
+                    // Let the React Router handle redirection via state change, or manual push if needed
+                    // But for now, we just ensure the token is gone.
                 }
-                toast.error('Session expired. Please login again.');
             } else if (error.response.status >= 500) {
-                toast.error('Server error. Please try again later.');
+                // toast.error('Server error. Please try again later.'); // Optional: reduce noise
             }
         } else if (error.request) {
-            // Network error
-            toast.error('Network error. Check your connection.');
+            console.error('Network Error:', error.request);
+            // toast.error('Network error. Check your connection.');
         }
         return Promise.reject(error);
     }
@@ -86,6 +92,7 @@ export const AuthProvider = ({ children }) => {
                 fetchUnreadCount();
             } catch (error) {
                 // Not logged in or token expired
+                console.warn('Check user failed (usually normal if not logged in):', error);
                 localStorage.removeItem('token');
                 setUser(null);
             } finally {
@@ -93,12 +100,25 @@ export const AuthProvider = ({ children }) => {
             }
         };
 
+        // Listen for 401 events from axios interceptor
+        const handleUnauthorized = () => {
+            setUser(null);
+            setUnreadNotifications(0);
+            toast.error('Session expired. Please login again.');
+        };
+
+        window.addEventListener('auth:unauthorized', handleUnauthorized);
+
         const token = localStorage.getItem('token');
         if (token) {
             checkUserLoggedIn();
         } else {
             setLoading(false);
         }
+
+        return () => {
+            window.removeEventListener('auth:unauthorized', handleUnauthorized);
+        };
     }, []);
 
     // Also poll for notifications if user is logged in

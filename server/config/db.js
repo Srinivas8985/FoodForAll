@@ -14,7 +14,7 @@ const connectDB = async () => {
 
     if (!cached.promise) {
         const opts = {
-            bufferCommands: false,
+            bufferCommands: true, // Re-enable buffering to prevent startup errors on Vercel
         };
 
         console.log('Creating new MongoDB connection...');
