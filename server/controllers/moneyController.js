@@ -120,22 +120,18 @@ exports.getAllMoneyDonations = async (req, res) => {
     }
 };
 
-const fs = require('fs');
-const path = require('path');
-
 // @desc    Get money donations for logged in NGO
 // @route   GET /api/money/ngo
 // @access  Private (NGO)
 exports.getNgoMoneyDonations = async (req, res) => {
     try {
-        const logPath = path.join(__dirname, '../debug.log');
-        fs.appendFileSync(logPath, `[${new Date().toISOString()}] Fetching money for NGO: ${req.user.id}\n`);
+        console.log(`[${new Date().toISOString()}] Fetching money for NGO: ${req.user.id}`);
 
         const donations = await MoneyDonation.find({ recipientNGO: req.user.id })
             .populate('donor', 'name email')
             .sort({ transactionDate: -1 });
 
-        fs.appendFileSync(logPath, `[${new Date().toISOString()}] Found ${donations.length} money donations\n`);
+        console.log(`[${new Date().toISOString()}] Found ${donations.length} money donations`);
 
         res.status(200).json({
             success: true,
@@ -143,9 +139,7 @@ exports.getNgoMoneyDonations = async (req, res) => {
             data: donations
         });
     } catch (error) {
-        const logPath = path.join(__dirname, '../debug.log');
-        fs.appendFileSync(logPath, `[${new Date().toISOString()}] Error fetching money: ${error.message}\nStack: ${error.stack}\n`);
-
+        console.error(`[${new Date().toISOString()}] Error fetching money: ${error.message}\nStack: ${error.stack}`);
         console.error('Error fetching NGO money donations:', error);
         res.status(500).json({ success: false, message: 'Server Error' });
     }
