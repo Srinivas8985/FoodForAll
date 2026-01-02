@@ -16,7 +16,7 @@ const generateToken = (id) => {
 exports.register = async (req, res) => {
     try {
         console.log('Register Request Body:', req.body); // DEBUG LOG
-        const { name, email, password, role, phone, address } = req.body;
+        const { name, email, password, role, phone, address, organizationName, organizationId, fullAddress, city, pincode, location } = req.body;
 
         // Check if user exists
         const userExists = await User.findOne({ email });
@@ -33,6 +33,12 @@ exports.register = async (req, res) => {
             role,
             phone,
             address,
+            organizationName,
+            organizationId,
+            fullAddress,
+            city,
+            pincode,
+            location,
             verificationStatus: role === 'ngo' ? 'pending' : 'none'
         });
 
