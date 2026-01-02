@@ -19,10 +19,16 @@ export const DonationSchema = z.object({
     foodName: z.string().default('Unknown Item'),
     quantity: z.string().default(''),
     pickupLocation: z.string().optional(),
-    status: z.enum(['available', 'assigned', 'collected', 'expired']).default('available'),
+    status: z.enum(['available', 'assigned', 'collected', 'delivered', 'expired']).default('available'),
+    donationStatus: z.enum(['pending', 'accepted', 'assigned', 'distributed', 'rejected']).optional(),
     createdAt: DateString,
     donor: UserSchema.optional().or(z.string().optional()), // Can be object or ID
-    type: z.literal('donation').default('donation') // Enhanced field for UI
+    type: z.literal('donation').default('donation'), // Enhanced field for UI
+    foodType: z.string().optional(),
+    servings: z.number().optional().or(z.string().transform(Number)),
+    expiryTime: DateString.optional(),
+    contactPhone: z.string().optional(),
+    message: z.string().optional()
 });
 
 // Request Schema
