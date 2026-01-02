@@ -8,7 +8,6 @@ import { validateResponse } from '../../utils/validate';
 import { DonationListResponse, RequestListResponse } from '../../schemas/apiSchemas';
 import DistributionForm from '../../components/DistributionForm';
 import DonationDetailsModal from '../../components/DonationDetailsModal';
-import DonationDetailsModal from '../../components/DonationDetailsModal';
 
 const AdminDashboard = () => {
     const { user, api } = useAuth();
