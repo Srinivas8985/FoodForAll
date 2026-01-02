@@ -89,15 +89,24 @@ const VerificationDashboard = () => {
 
                                 <div className="space-y-2 text-sm text-gray-600">
                                     <div className="flex items-center gap-2">
-                                        <FileText className="h-4 w-4" />
+                                        <FileText className="h-4 w-4 flex-shrink-0" />
                                         <span className="truncate">ID: {ngo.organizationId || 'N/A'}</span>
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <MapPin className="h-4 w-4" />
-                                        <span className="truncate">{ngo.fullAddress || ngo.address || ngo.city || 'Address N/A'}</span>
+                                        <Phone className="h-4 w-4 flex-shrink-0" />
+                                        <span className="truncate">{ngo.phone || 'No Phone'}</span>
+                                    </div>
+                                    <div className="flex items-start gap-2">
+                                        <MapPin className="h-4 w-4 flex-shrink-0 mt-0.5" />
+                                        <div className="flex flex-col overflow-hidden">
+                                            <span className="font-medium truncate">{ngo.city} {ngo.pincode ? `- ${ngo.pincode}` : ''}</span>
+                                            <span className="text-xs text-gray-500 line-clamp-2" title={ngo.fullAddress || ngo.address}>
+                                                {ngo.fullAddress || ngo.address || 'Address N/A'}
+                                            </span>
+                                        </div>
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <Calendar className="h-4 w-4" />
+                                        <Calendar className="h-4 w-4 flex-shrink-0" />
                                         <span>Applied: {new Date(ngo.createdAt).toLocaleDateString()}</span>
                                     </div>
                                 </div>
