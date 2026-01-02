@@ -149,6 +149,7 @@ const AdminDashboard = () => {
                         <thead className="bg-gray-50/50">
                             <tr>
                                 <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">User</th>
+                                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Reg ID</th>
                                 <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Role</th>
                                 <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Contact</th>
                                 <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Location</th>
@@ -169,6 +170,9 @@ const AdminDashboard = () => {
                                                 <div className="text-xs text-gray-500">{u.email}</div>
                                             </div>
                                         </div>
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                                        {u.organizationId || <span className="text-gray-400 italic">N/A</span>}
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <span className="px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-600 capitalize">
