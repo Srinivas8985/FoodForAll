@@ -330,7 +330,7 @@ const DonateFood = () => {
                                         type="tel"
                                         name="contactPhone"
                                         required
-                                        placeholder="+1 234 567 890"
+                                        placeholder="+91 98765 43210"
                                         className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none transition-all bg-gray-50/50"
                                         value={formData.contactPhone}
                                         onChange={(e) => setFormData({ ...formData, contactPhone: e.target.value })}
