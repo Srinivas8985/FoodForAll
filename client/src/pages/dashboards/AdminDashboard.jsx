@@ -150,6 +150,8 @@ const AdminDashboard = () => {
                             <tr>
                                 <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">User</th>
                                 <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Role</th>
+                                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Contact</th>
+                                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Location</th>
                                 <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Verification Status</th>
                                 <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Actions</th>
                             </tr>
@@ -172,6 +174,18 @@ const AdminDashboard = () => {
                                         <span className="px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-600 capitalize">
                                             {u.role}
                                         </span>
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                                        {u.phone || 'N/A'}
+                                    </td>
+                                    <td className="px-6 py-4 text-sm text-gray-600 max-w-xs truncate">
+                                        {u.fullAddress || u.address ? (
+                                            <span title={`${u.fullAddress || u.address}, ${u.city} ${u.pincode}`}>
+                                                {[u.fullAddress || u.address, u.city, u.pincode].filter(Boolean).join(', ')}
+                                            </span>
+                                        ) : (
+                                            <span className="text-gray-400 italic">No address</span>
+                                        )}
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         {u.role === 'ngo' ? (
