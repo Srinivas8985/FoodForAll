@@ -199,7 +199,7 @@ const DonorDashboard = () => {
                                             </span>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
-                                            {item.type === 'money' && item.usageProofImages?.length > 0 && (
+                                            {(item.type === 'money' || item.type === 'donation') && item.usageProofImages?.length > 0 && (
                                                 <button
                                                     onClick={() => setViewingProof(item)}
                                                     className="inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded-full shadow-sm text-white bg-secondary-600 hover:bg-secondary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary-500"

@@ -195,3 +195,51 @@ exports.getMyDonations = async (req, res) => {
         res.status(500).json({ success: false, message: error.message });
     }
 };
+
+// @desc    Add usage proof to a food donation
+// @route   PUT /api/donations/:id/proof
+// @access  Private (NGO/Admin)
+exports.addUsageProof = async (req, res) => {
+    try {
+        const { images, description } = req.body;
+        const donationId = req.params.id;
+
+        let donation = await FoodDonation.findById(donationId);
+
+        if (!donation) {
+            return res.status(404).json({ success: false, message: 'Donation not found' });
+        }
+
+        // Verify that the logged in user is the recipient NGO or Admin
+        if (donation.recipientId && donation.recipientId.toString() !== req.user.id && req.user.role !== 'admin') {
+            return res.status(401).json({ success: false, message: 'Not authorized to add proof for this donation' });
+        }
+
+        // If no specific recipient (portal), only admin can add proof? Or maybe the assigned user?
+        // Let's assume for now if it's assigned to a user, that user can add proof if they are NGO/Admin.
+        // But typically portal donations are distributed by admins/volunteers.
+        // For now, checks are:
+        // 1. If recipientId exists (Direct Donation), user must be that recipient or Admin.
+        // 2. If no recipientId (Portal Donation), user must be Admin.
+
+        if (!donation.recipientId && req.user.role !== 'admin') {
+            // Maybe allow assignedTo user if they are staff? For now restrict to Admin.
+            return res.status(401).json({ success: false, message: 'Only admins can add proof for general donations' });
+        }
+
+        donation.usageProofImages = images || donation.usageProofImages;
+        donation.usageProofDescription = description || donation.usageProofDescription;
+
+        await donation.save();
+
+        res.status(200).json({
+            success: true,
+            data: donation,
+            message: 'Usage proof added successfully'
+        });
+
+    } catch (error) {
+        console.error('Error adding usage proof:', error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+};

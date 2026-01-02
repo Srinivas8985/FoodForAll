@@ -20,7 +20,11 @@ const AddProofModal = ({ donation, onClose, onSuccess }) => {
         setLoading(true);
         try {
             const imageArray = images.split('\n').map(url => url.trim()).filter(url => url);
-            await api.put(`/money/${donation._id}/proof`, {
+            const endpoint = donation.type === 'money'
+                ? `/money/${donation._id}/proof`
+                : `/donations/${donation._id}/proof`;
+
+            await api.put(endpoint, {
                 images: imageArray,
                 description
             });
@@ -301,7 +305,7 @@ const NGODashboard = () => {
                                                 >
                                                     View Details
                                                 </button>
-                                                {item.type === 'money' && (
+                                                {(item.type === 'money' || (item.type === 'donation' && (item.status === 'assigned' || item.status === 'distributed'))) && (
                                                     <button
                                                         onClick={() => setSelectedDonation(item)}
                                                         className="text-secondary-600 hover:text-secondary-800 font-medium hover:underline text-xs"

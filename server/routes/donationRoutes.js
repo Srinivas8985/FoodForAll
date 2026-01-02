@@ -7,7 +7,8 @@ const {
     deleteDonation,
     getMyDonations,
     getPublicDonations,
-    getNgoDonations
+    getNgoDonations,
+    addUsageProof
 } = require('../controllers/donationController');
 
 const { protect, authorize } = require('../middleware/auth');
@@ -27,5 +28,7 @@ router.route('/:id')
     .get(getDonation)
     .put(protect, updateDonation)
     .delete(protect, authorize('donor', 'admin'), deleteDonation);
+
+router.route('/:id/proof').put(protect, authorize('ngo', 'admin'), addUsageProof);
 
 module.exports = router;

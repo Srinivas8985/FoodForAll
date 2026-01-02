@@ -83,6 +83,14 @@ const foodDonationSchema = new mongoose.Schema({
         default: 'pending'
     },
     donorNotes: String,
+    usageProofImages: {
+        type: [String],
+        default: []
+    },
+    usageProofDescription: {
+        type: String,
+        default: ''
+    },
     createdAt: {
         type: Date,
         default: Date.now
