@@ -13,22 +13,25 @@ const FindFood = () => {
 
     const handleSearch = async (e, showAll = false) => {
         if (e) e.preventDefault();
-        
+
         // If not showing all, require a query
         if (!showAll && !search.query) return toast.error('Please enter a search term');
-        
+
         setLoading(true);
         try {
             // Using direct axios since this is a public page (no auth needed/AuthContext might not be loaded if strictly public)
             // But we can assume the baseURL from env
-            const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-            
+            // Normalize base URL (handle trailing slash and missing /api)
+            let baseURL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+            if (baseURL.endsWith('/')) baseURL = baseURL.slice(0, -1);
+            if (!baseURL.endsWith('/api')) baseURL += '/api';
+
             // Build params: if showAll is true, send empty params to fetch everything
             const params = showAll ? {} : (search.type === 'pincode' ? { pincode: search.query } : { area: search.query });
-            
+
             const res = await axios.get(`${baseURL}/distribution/public`, { params });
             setDistributions(res.data.data);
-            
+
             if (res.data.data.length === 0) {
                 toast('No active distributions found', { icon: 'ℹ️' });
             } else if (showAll) {
