@@ -83,9 +83,9 @@ const About = () => {
                     <h2 className="text-3xl font-bold text-gray-900 text-center mb-12">Meet The Team</h2>
                     <div className="grid md:grid-cols-3 gap-8">
                         {[
-                            { name: 'Sarah Johnson', role: 'Founder & CEO', color: 'bg-blue-100 text-blue-600' },
-                            { name: 'Rahul Verma', role: 'Head of Operations', color: 'bg-green-100 text-green-600' },
-                            { name: 'Priya Patel', role: 'Tech Lead', color: 'bg-purple-100 text-purple-600' }
+                            { name: 'Adepu Lakshmi Srinivas', role: 'Founder & CEO', color: 'bg-blue-100 text-blue-600' },
+                            { name: 'Harshit Kumar Ramadevu', role: 'Head of Operations', color: 'bg-green-100 text-green-600' },
+                            { name: 'Gonthina Dinesh', role: 'Tech Lead', color: 'bg-purple-100 text-purple-600' }
                         ].map((member, index) => (
                             <motion.div
                                 key={index}
