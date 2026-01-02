@@ -7,6 +7,7 @@ import { toast } from 'react-hot-toast';
 import { validateResponse } from '../../utils/validate';
 import { RequestListResponse, DonationListResponse, MoneyListResponse } from '../../schemas/apiSchemas';
 import DistributionForm from '../../components/DistributionForm';
+import DonationDetailsModal from '../../components/DonationDetailsModal';
 
 const AddProofModal = ({ donation, onClose, onSuccess }) => {
     const { api } = useAuth();
@@ -94,6 +95,8 @@ const NGODashboard = () => {
     const [myItems, setMyItems] = useState([]);
     const [loading, setLoading] = useState(true);
     const [selectedDonation, setSelectedDonation] = useState(null);
+    const [actionLoading, setActionLoading] = useState(false);
+    const [viewDetailsDonation, setViewDetailsDonation] = useState(null);
 
     const fetchData = async () => {
         try {
@@ -161,6 +164,24 @@ const NGODashboard = () => {
         const interval = setInterval(fetchData, 10000);
         return () => clearInterval(interval);
     }, [api]);
+
+    const handleDonationAction = async (id, action) => {
+        setActionLoading(true);
+        try {
+            await api.put(`/donations/${id}`, {
+                donationStatus: action, // 'accepted' or 'rejected'
+                status: action === 'accepted' ? 'assigned' : 'available'
+            });
+            toast.success(`Donation ${action} successfully!`);
+            setViewDetailsDonation(null);
+            fetchData(); // Refresh list
+        } catch (err) {
+            console.error(err);
+            toast.error("Failed to update status");
+        } finally {
+            setActionLoading(false);
+        }
+    };
 
     const container = {
         hidden: { opacity: 0 },
@@ -273,14 +294,22 @@ const NGODashboard = () => {
                                             </span>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm">
-                                            {item.type === 'money' && (
+                                            <div className="flex gap-3">
                                                 <button
-                                                    onClick={() => setSelectedDonation(item)}
-                                                    className="text-secondary-600 hover:text-secondary-800 font-medium hover:underline text-xs"
+                                                    onClick={() => setViewDetailsDonation(item)}
+                                                    className="text-primary-600 hover:text-primary-800 font-medium hover:underline text-xs"
                                                 >
-                                                    {item.usageProofImages?.length > 0 ? 'Edit Proof' : 'Add Proof'}
+                                                    View Details
                                                 </button>
-                                            )}
+                                                {item.type === 'money' && (
+                                                    <button
+                                                        onClick={() => setSelectedDonation(item)}
+                                                        className="text-secondary-600 hover:text-secondary-800 font-medium hover:underline text-xs"
+                                                    >
+                                                        {item.usageProofImages?.length > 0 ? 'Edit Proof' : 'Add Proof'}
+                                                    </button>
+                                                )}
+                                            </div>
                                         </td>
                                     </tr>
                                 ))
@@ -319,6 +348,16 @@ const NGODashboard = () => {
                         setSelectedDonation(null);
                         fetchData();
                     }}
+                />
+            )}
+
+            {/* View Details Modal for Acceptance */}
+            {viewDetailsDonation && viewDetailsDonation.type === 'donation' && (
+                <DonationDetailsModal
+                    donation={viewDetailsDonation}
+                    onClose={() => setViewDetailsDonation(null)}
+                    onAction={handleDonationAction}
+                    actionLoading={actionLoading}
                 />
             )}
         </div>

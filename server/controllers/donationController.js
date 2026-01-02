@@ -8,7 +8,7 @@ const Notification = require('../models/Notification');
 exports.getDonations = async (req, res) => {
     try {
         const donations = await FoodDonation.find({ status: 'available' })
-            .populate('donor', 'name email phone')
+            .populate('donor', 'name email phone address fullAddress city pincode')
             .sort({ createdAt: -1 });
 
         res.status(200).json({ success: true, count: donations.length, data: donations });
@@ -175,7 +175,7 @@ exports.getNgoDonations = async (req, res) => {
         console.log(`[${new Date().toISOString()}] Fetching donations for NGO: ${req.user.id}`);
 
         const donations = await FoodDonation.find({ recipientId: req.user.id })
-            .populate('donor', 'name email phone')
+            .populate('donor', 'name email phone address fullAddress city pincode')
             .sort({ createdAt: -1 });
 
         console.log(`[${new Date().toISOString()}] Found ${donations.length} donations`);

@@ -7,6 +7,8 @@ import { toast } from 'react-hot-toast';
 import { validateResponse } from '../../utils/validate';
 import { DonationListResponse, RequestListResponse } from '../../schemas/apiSchemas';
 import DistributionForm from '../../components/DistributionForm';
+import DonationDetailsModal from '../../components/DonationDetailsModal';
+import DonationDetailsModal from '../../components/DonationDetailsModal';
 
 const AdminDashboard = () => {
     const { user, api } = useAuth();
@@ -20,6 +22,8 @@ const AdminDashboard = () => {
     const [users, setUsers] = useState([]);
     const [myItems, setMyItems] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [viewDetailsDonation, setViewDetailsDonation] = useState(null);
+    const [actionLoading, setActionLoading] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -74,6 +78,25 @@ const AdminDashboard = () => {
         } catch (error) {
             console.error('Verification failed', error);
             // toast handled by global interceptor likely
+        }
+    };
+
+    const handleDonationAction = async (id, action) => {
+        setActionLoading(true);
+        try {
+            await api.put(`/donations/${id}`, {
+                donationStatus: action, // 'accepted' or 'rejected'
+                status: 'assigned' // Admin override usually implies finality or assignment
+            });
+            toast.success(`Donation ${action} successfully!`);
+            setViewDetailsDonation(null);
+            // Quick refresh logic or just update local state
+            setMyItems(myItems.map(i => i._id === id ? { ...i, donationStatus: action } : i));
+        } catch (err) {
+            console.error(err);
+            toast.error("Failed to update status");
+        } finally {
+            setActionLoading(false);
         }
     };
 
@@ -248,7 +271,9 @@ const AdminDashboard = () => {
                                 <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Item Details</th>
                                 <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Quantity</th>
                                 <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Date</th>
+                                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Date</th>
                                 <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
+                                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Actions</th>
                             </tr>
                         </thead>
                         <tbody className="bg-transparent divide-y divide-gray-100">
@@ -284,6 +309,16 @@ const AdminDashboard = () => {
                                                 {item.status}
                                             </span>
                                         </td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm">
+                                            {(item.foodName) && (
+                                                <button
+                                                    onClick={() => setViewDetailsDonation(item)}
+                                                    className="text-primary-600 hover:text-primary-800 font-medium hover:underline text-xs"
+                                                >
+                                                    Manage Details
+                                                </button>
+                                            )}
+                                        </td>
                                     </tr>
                                 ))
                             ) : (
@@ -312,6 +347,16 @@ const AdminDashboard = () => {
                     <DistributionForm onSuccess={() => toast.success("Admin Distribution logged successfully.")} />
                 </div>
             </div>
+
+            {/* View Details Modal for Admin */}
+            {viewDetailsDonation && (
+                <DonationDetailsModal
+                    donation={viewDetailsDonation}
+                    onClose={() => setViewDetailsDonation(null)}
+                    onAction={handleDonationAction}
+                    actionLoading={actionLoading}
+                />
+            )}
         </div>
     );
 };
