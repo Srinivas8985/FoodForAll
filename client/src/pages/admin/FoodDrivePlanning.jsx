@@ -109,6 +109,34 @@ const FoodDrivePlanning = () => {
                                 onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                                 required
                             />
+                            <button
+                                type="button"
+                                onClick={async () => {
+                                    if (!formData.address) return toast.error('Please enter an address first');
+                                    const toastId = toast.loading('Fetching coordinates...');
+                                    try {
+                                        const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(formData.address)}`);
+                                        const data = await res.json();
+                                        if (data && data.length > 0) {
+                                            setFormData(prev => ({
+                                                ...prev,
+                                                lat: data[0].lat,
+                                                lon: data[0].lon
+                                            }));
+                                            toast.success('Coordinates fetched!', { id: toastId });
+                                        } else {
+                                            toast.error('Address not found', { id: toastId });
+                                        }
+                                    } catch (err) {
+                                        console.error(err);
+                                        toast.error('Failed to fetch coordinates', { id: toastId });
+                                    }
+                                }}
+                                className="mt-2 text-sm text-secondary-600 hover:text-secondary-700 font-medium flex items-center gap-1"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-search"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
+                                Get Coordinates from Address
+                            </button>
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-gray-700">Pincode</label>
