@@ -7,7 +7,8 @@ import { toast } from 'react-hot-toast';
 import { validateResponse } from '../../utils/validate';
 import { DonationListResponse, RequestListResponse } from '../../schemas/apiSchemas';
 import DistributionForm from '../../components/DistributionForm';
-import DonationDetailsModal from '../../components/DonationDetailsModal';
+import AddProofModal from '../../components/AddProofModal';
+import ViewProofModal from '../../components/ViewProofModal';
 
 const AdminDashboard = () => {
     const { user, api } = useAuth();
@@ -22,6 +23,8 @@ const AdminDashboard = () => {
     const [myItems, setMyItems] = useState([]);
     const [loading, setLoading] = useState(true);
     const [viewDetailsDonation, setViewDetailsDonation] = useState(null);
+    const [modifyProofDonation, setModifyProofDonation] = useState(null);
+    const [viewingProof, setViewingProof] = useState(null);
     const [actionLoading, setActionLoading] = useState(false);
 
     useEffect(() => {
@@ -310,12 +313,30 @@ const AdminDashboard = () => {
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm">
                                             {(item.foodName) && (
-                                                <button
-                                                    onClick={() => setViewDetailsDonation(item)}
-                                                    className="text-primary-600 hover:text-primary-800 font-medium hover:underline text-xs"
-                                                >
-                                                    Manage Details
-                                                </button>
+                                                <div className="flex gap-2">
+                                                    <button
+                                                        onClick={() => setViewDetailsDonation(item)}
+                                                        className="text-primary-600 hover:text-primary-800 font-medium hover:underline text-xs"
+                                                    >
+                                                        Manage
+                                                    </button>
+                                                    {['assigned', 'distributed', 'delivered'].includes(item.status) && (
+                                                        <button
+                                                            onClick={() => setModifyProofDonation(item)}
+                                                            className="text-secondary-600 hover:text-secondary-800 font-medium hover:underline text-xs"
+                                                        >
+                                                            {item.usageProofImages?.length > 0 ? 'Edit Proof' : 'Add Proof'}
+                                                        </button>
+                                                    )}
+                                                    {item.usageProofImages?.length > 0 && (
+                                                        <button
+                                                            onClick={() => setViewingProof(item)}
+                                                            className="text-gray-600 hover:text-gray-800 font-medium hover:underline text-xs"
+                                                        >
+                                                            View Proof
+                                                        </button>
+                                                    )}
+                                                </div>
                                             )}
                                         </td>
                                     </tr>
@@ -354,6 +375,25 @@ const AdminDashboard = () => {
                     onClose={() => setViewDetailsDonation(null)}
                     onAction={handleDonationAction}
                     actionLoading={actionLoading}
+                />
+            )}
+
+            {modifyProofDonation && (
+                <AddProofModal
+                    donation={modifyProofDonation}
+                    onClose={() => setModifyProofDonation(null)}
+                    onSuccess={() => {
+                        setModifyProofDonation(null);
+                        // fetchData(); // Ideally refresh data
+                        window.location.reload(); // Quick refresh for now
+                    }}
+                />
+            )}
+
+            {viewingProof && (
+                <ViewProofModal
+                    donation={viewingProof}
+                    onClose={() => setViewingProof(null)}
                 />
             )}
         </div>

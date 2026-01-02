@@ -230,6 +230,10 @@ exports.addUsageProof = async (req, res) => {
         donation.usageProofImages = images || donation.usageProofImages;
         donation.usageProofDescription = description || donation.usageProofDescription;
 
+        // Auto-complete the donation
+        donation.status = 'delivered';
+        donation.donationStatus = 'distributed';
+
         await donation.save();
 
         res.status(200).json({
