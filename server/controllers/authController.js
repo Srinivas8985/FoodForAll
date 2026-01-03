@@ -200,6 +200,26 @@ exports.resetPassword = async (req, res) => {
     }
 };
 
+// @desc    Get Admin Contact (For Chat)
+// @route   GET /api/auth/admin-contact
+// @access  Private
+exports.getAdminContact = async (req, res) => {
+    try {
+        const admin = await User.findOne({ role: 'admin' }).select('name email _id role');
+
+        if (!admin) {
+            return res.status(404).json({ success: false, message: 'No admin found' });
+        }
+
+        res.status(200).json({
+            success: true,
+            data: admin
+        });
+    } catch (err) {
+        res.status(500).json({ success: false, message: 'Server Error' });
+    }
+};
+
 // Helper function to get token from model, create cookie and send response
 const sendTokenResponse = (user, statusCode, res) => {
     // Create token
