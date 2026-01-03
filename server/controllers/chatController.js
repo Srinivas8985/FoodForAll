@@ -1,6 +1,7 @@
 const Conversation = require("../models/Conversation");
 const Message = require("../models/Message");
 const User = require("../models/User");
+const Notification = require("../models/Notification");
 
 // @desc    Create new conversation
 // @route   POST /api/chat/conversation
@@ -62,7 +63,24 @@ exports.addMessage = async (req, res) => {
     try {
         const savedMessage = await newMessage.save();
         // Update conversation updated_at
-        await Conversation.findByIdAndUpdate(req.body.conversationId, { updatedAt: Date.now() });
+        const conversation = await Conversation.findByIdAndUpdate(req.body.conversationId, { updatedAt: Date.now() }, { new: true });
+
+        // Create Notification for the receiver
+        const receiverId = conversation.members.find(member => member !== req.body.sender);
+
+        if (receiverId) {
+            const sender = await User.findById(req.body.sender);
+            const senderName = sender ? sender.name : 'Someone';
+
+            await Notification.create({
+                user: receiverId,
+                title: 'New Message',
+                message: `You have received a new message from ${senderName}`,
+                type: 'info',
+                relatedId: conversation._id // Link to conversation so we might deep link later
+            });
+        }
+
         res.status(200).json(savedMessage);
     } catch (err) {
         res.status(500).json({ status: false, message: err.message });
