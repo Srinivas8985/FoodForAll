@@ -176,8 +176,23 @@ const DonateFood = () => {
                                             </div>
                                             <div>
                                                 <h4 className="font-bold text-gray-900">{verifiedNGOs.find(n => n._id === recipientId).organizationName || verifiedNGOs.find(n => n._id === recipientId).name}</h4>
-                                                <p className="text-sm text-gray-600 mt-1">{verifiedNGOs.find(n => n._id === recipientId).fullAddress || verifiedNGOs.find(n => n._id === recipientId).address || "Address not available"}</p>
-                                                <p className="text-sm text-gray-600">{verifiedNGOs.find(n => n._id === recipientId).city ? `${verifiedNGOs.find(n => n._id === recipientId).city} - ` : ''}{verifiedNGOs.find(n => n._id === recipientId).pincode || ''}</p>
+                                                <p className="text-sm text-gray-600 mt-1">
+                                                    {verifiedNGOs.find(n => n._id === recipientId).fullAddress ||
+                                                        verifiedNGOs.find(n => n._id === recipientId).address ||
+                                                        (
+                                                            verifiedNGOs.find(n => n._id === recipientId).city ?
+                                                                `${verifiedNGOs.find(n => n._id === recipientId).city}, ${verifiedNGOs.find(n => n._id === recipientId).pincode || ''}` :
+                                                                "Address not available"
+                                                        )
+                                                    }
+                                                </p>
+                                                {/* Only show city/pincode line if full address wasn't shown above to avoid duplication, or if it adds more context */}
+                                                {(verifiedNGOs.find(n => n._id === recipientId).fullAddress || verifiedNGOs.find(n => n._id === recipientId).address) && (
+                                                    <p className="text-sm text-gray-600">
+                                                        {verifiedNGOs.find(n => n._id === recipientId).city ? `${verifiedNGOs.find(n => n._id === recipientId).city} - ` : ''}
+                                                        {verifiedNGOs.find(n => n._id === recipientId).pincode || ''}
+                                                    </p>
+                                                )}
                                                 <div className="flex gap-4 mt-3 text-sm text-gray-500">
                                                     <span className="flex items-center gap-1"><Phone className="w-3 h-3" /> {verifiedNGOs.find(n => n._id === recipientId).phone}</span>
                                                 </div>

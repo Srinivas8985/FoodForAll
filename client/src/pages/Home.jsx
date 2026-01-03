@@ -22,7 +22,17 @@ const Home = () => {
                 // or use the base URL from env. Assuming public endpoint doesn't need auth header,
                 // but standard api instance might attach it if available.
                 // Safest is to use the generic axios with the base URL.
-                const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+                let baseURL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+
+                // Consistency check: Remove trailing slash
+                if (baseURL.endsWith('/')) {
+                    baseURL = baseURL.slice(0, -1);
+                }
+                // Ensure it points to /api
+                if (!baseURL.endsWith('/api')) {
+                    baseURL += '/api';
+                }
+
                 const res = await axios.get(`${baseURL}/analytics/public-stats`);
                 if (res.data.success) {
                     setStats(res.data.data);

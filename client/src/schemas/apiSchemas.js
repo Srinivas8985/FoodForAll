@@ -28,7 +28,9 @@ export const DonationSchema = z.object({
     servings: z.number().optional().or(z.string().transform(Number)),
     expiryTime: DateString.optional(),
     contactPhone: z.string().optional(),
-    message: z.string().optional()
+    message: z.string().optional(),
+    usageProofImages: z.array(z.string()).optional(),
+    usageProofDescription: z.string().optional()
 });
 
 // Request Schema
