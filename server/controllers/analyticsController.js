@@ -3,6 +3,7 @@ const Distribution = require('../models/Distribution');
 const User = require('../models/User');
 const FoodDonation = require('../models/FoodDonation');
 const MoneyDonation = require('../models/MoneyDonation');
+const { generateHungerInsights } = require('../services/aiService');
 
 // @desc    Get all hunger areas with scores
 // @route   GET /api/analytics/hunger-areas
@@ -130,9 +131,41 @@ const getPublicStats = async (req, res) => {
     }
 };
 
+// @desc    Generate AI Insights for Hunger Data
+// @route   POST /api/analytics/analyze
+// @access  Private (Admin)
+const analyzeHungerData = async (req, res) => {
+    try {
+        // Fetch current hunger areas and reports to analyze
+        const areas = await HungerArea.find({ hungerScore: { $gt: 0 } }).sort({ hungerScore: -1 }).limit(10);
+
+        // Prepare data summary for AI
+        const dataSummary = {
+            topHungerAreas: areas.map(a => ({
+                area: a.areaName,
+                city: a.city, // Assuming city field exists or part of address
+                score: a.hungerScore,
+                reportedBy: a.reportedByCount || 1
+            })),
+            timestamp: new Date().toISOString()
+        };
+
+        const insights = await generateHungerInsights(dataSummary);
+
+        res.status(200).json({
+            success: true,
+            data: insights
+        });
+    } catch (error) {
+        console.error('AI Analysis Error:', error.message);
+        res.status(500).json({ success: false, message: error.message || 'Failed to generate insights' });
+    }
+};
+
 module.exports = {
     getHungerAreas,
     getHeatmapData,
     getReports,
-    getPublicStats
+    getPublicStats,
+    analyzeHungerData
 };

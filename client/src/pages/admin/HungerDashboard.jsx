@@ -8,6 +8,22 @@ const HungerDashboard = () => {
     const [heatmapData, setHeatmapData] = useState([]);
     const [stats, setStats] = useState(null);
     const [alerts, setAlerts] = useState([]);
+    const [aiInsights, setAiInsights] = useState(null);
+    const [loadingAi, setLoadingAi] = useState(false);
+
+    const handleGenerateInsights = async () => {
+        setLoadingAi(true);
+        try {
+            const res = await api.post('/analytics/analyze');
+            setAiInsights(res.data.data);
+        } catch (error) {
+            console.error('Error generating AI insights', error);
+            // Assuming toast is available globally or we can just log for now, or add a local error state
+            alert('Failed to generate insights');
+        } finally {
+            setLoadingAi(false);
+        }
+    };
 
     useEffect(() => {
         const fetchData = async () => {
@@ -77,8 +93,35 @@ const HungerDashboard = () => {
                 </div>
 
                 {/* Placeholder for more detailed charts if needed */}
-                <div className="bg-white p-6 rounded-lg shadow flex items-center justify-center">
-                    <p className="text-gray-500">More analytics coming soon...</p>
+                <div className="bg-white p-6 rounded-lg shadow flex flex-col items-center justify-center">
+                    <h2 className="text-xl font-semibold mb-4 text-gray-800">AI Analytics</h2>
+                    <p className="text-gray-500 mb-4 text-center">Get actionable insights from Gemini AI based on current hunger data.</p>
+
+                    {!aiInsights ? (
+                        <button
+                            onClick={handleGenerateInsights}
+                            disabled={loadingAi}
+                            className={`px-4 py-2 rounded-lg text-white font-medium transition-colors ${loadingAi
+                                ? 'bg-gray-400 cursor-not-allowed'
+                                : 'bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700'
+                                }`}
+                        >
+                            {loadingAi ? 'Analyzing...' : 'Generate AI Insights'}
+                        </button>
+                    ) : (
+                        <div className="w-full">
+                            <div className="bg-indigo-50 p-4 rounded-lg border border-indigo-100 max-h-96 overflow-y-auto prose prose-sm">
+                                <h3 className="text-lg font-bold text-indigo-800 mb-2">Gemini Analysis</h3>
+                                <div className="text-gray-700 whitespace-pre-wrap">{aiInsights}</div>
+                            </div>
+                            <button
+                                onClick={() => setAiInsights(null)}
+                                className="mt-4 text-indigo-600 hover:text-indigo-800 text-sm font-medium"
+                            >
+                                Clear Analysis
+                            </button>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
