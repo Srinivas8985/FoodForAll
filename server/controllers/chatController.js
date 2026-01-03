@@ -72,6 +72,17 @@ exports.addMessage = async (req, res) => {
 // @desc    Get messages of a conversation
 // @route   GET /api/chat/message/:conversationId
 // @access  Private
+exports.getMessages = async (req, res) => {
+    try {
+        const messages = await Message.find({
+            conversationId: req.params.conversationId,
+        });
+        res.status(200).json(messages);
+    } catch (err) {
+        res.status(500).json({ status: false, message: err.message });
+    }
+};
+
 // @desc    Get contacts for checking new chat
 // @route   GET /api/chat/contacts
 // @access  Private

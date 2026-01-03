@@ -26,6 +26,7 @@ app.use(cors({
             'http://localhost:5174',
             'http://127.0.0.1:5173',
             'http://127.0.0.1:5174',
+            'https://food-for-all-xoov.vercel.app', // Explicitly allow user frontend
             process.env.CLIENT_URL
         ];
 
