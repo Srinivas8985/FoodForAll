@@ -1,5 +1,8 @@
 const HungerArea = require('../models/HungerArea');
 const Distribution = require('../models/Distribution');
+const User = require('../models/User');
+const FoodDonation = require('../models/FoodDonation');
+const MoneyDonation = require('../models/MoneyDonation');
 
 // @desc    Get all hunger areas with scores
 // @route   GET /api/analytics/hunger-areas
@@ -65,10 +68,6 @@ const getReports = async (req, res) => {
 // @access  Public
 const getPublicStats = async (req, res) => {
     try {
-        const User = require('../models/User');
-        const FoodDonation = require('../models/FoodDonation');
-        const MoneyDonation = require('../models/MoneyDonation');
-
         // Parallel execution for performance
         const [donationCount, moneyCount, ngoCount, cityStats, mealsAggregation] = await Promise.all([
             FoodDonation.countDocuments({ status: 'available' }), // Count active/available listings? Or all historical? "Turning Surplus into Hope" implies all time. Let's count all.
