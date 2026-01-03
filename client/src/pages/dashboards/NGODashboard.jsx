@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
-import { Plus, List, Gift, Activity, TrendingUp } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Plus, List, Gift, Activity, TrendingUp, MessageSquare } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { validateResponse } from '../../utils/validate';
 import { RequestListResponse, DonationListResponse, MoneyListResponse } from '../../schemas/apiSchemas';
@@ -13,6 +13,7 @@ import AddProofModal from '../../components/AddProofModal';
 
 const NGODashboard = () => {
     const { user, api } = useAuth();
+    const navigate = useNavigate();
     const [stats, setStats] = useState({
         totalRequests: 0,
         pendingRequests: 0,
@@ -20,6 +21,28 @@ const NGODashboard = () => {
         totalMoneyReceived: 0
     });
     const [myItems, setMyItems] = useState([]);
+
+    const handleContactSupport = async () => {
+        try {
+            // Fetch an admin ID (temp solution: get first admin from user list or similar)
+            // For now, let's try to find an admin via a new endpoint or fallback
+            // Creating a robust way:
+            const res = await api.get('/auth/admin-contact');
+            if (res.data.data) {
+                await api.post('/chat/conversation', {
+                    senderId: user._id,
+                    receiverId: res.data.data._id
+                });
+                navigate('/chat');
+            } else {
+                toast.error("No support agents available");
+            }
+        } catch (err) {
+            console.error(err);
+            toast.error("Failed to contact support");
+        }
+    };
+
     const [loading, setLoading] = useState(true);
     const [selectedDonation, setSelectedDonation] = useState(null);
     const [actionLoading, setActionLoading] = useState(false);
@@ -174,6 +197,12 @@ const NGODashboard = () => {
                     <Link to="/request" className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-2.5 bg-secondary-600 text-white rounded-xl hover:bg-secondary-700 transition shadow-lg shadow-secondary-500/30">
                         <Plus className="h-5 w-5" /> New Request
                     </Link>
+                    <button
+                        onClick={handleContactSupport}
+                        className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-2.5 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition shadow-lg shadow-indigo-500/30"
+                    >
+                        <MessageSquare className="h-5 w-5" /> Contact Admin
+                    </button>
                 </div>
 
                 <div className="overflow-x-auto">

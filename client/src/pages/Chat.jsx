@@ -10,6 +10,12 @@ const Chat = () => {
     const [currentChat, setCurrentChat] = useState(null);
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState("");
+
+    // New Chat State
+    const [showNewChatModal, setShowNewChatModal] = useState(false);
+    const [contacts, setContacts] = useState([]);
+    const [loadingContacts, setLoadingContacts] = useState(false);
+
     const scrollRef = useRef();
 
     useEffect(() => {
@@ -71,15 +77,71 @@ const Chat = () => {
         scrollRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [messages]);
 
+    const handleOpenNewChat = async () => {
+        setShowNewChatModal(true);
+        setLoadingContacts(true);
+        try {
+            const res = await api.get('/chat/contacts');
+            setContacts(res.data);
+        } catch (err) {
+            console.error(err);
+            toast.error("Failed to load contacts");
+        } finally {
+            setLoadingContacts(false);
+        }
+    };
+
+    const handleUserSelect = async (contactId) => {
+        try {
+            // Check if conversation already exists in local list
+            const existing = conversations.find(c => c.members.includes(contactId));
+            if (existing) {
+                setCurrentChat(existing);
+                setShowNewChatModal(false);
+                return;
+            }
+
+            // Create new conversation
+            const res = await api.post('/chat/conversation', {
+                senderId: user._id,
+                receiverId: contactId
+            });
+
+            // Refresh conversations/Add to list
+            // For simplicity, we just fetch all again or append
+            const newConv = { ...res.data, otherUser: contacts.find(c => c._id === contactId) };
+
+            // To ensure we have full details, let's just refresh list
+            const refreshedList = await api.get(`/chat/conversation/${user._id}`);
+            setConversations(refreshedList.data);
+
+            // Find the new one from refreshed list to set as current
+            const createdConv = refreshedList.data.find(c => c.members.includes(contactId));
+            if (createdConv) setCurrentChat(createdConv);
+
+            setShowNewChatModal(false);
+        } catch (err) {
+            console.error(err);
+            toast.error("Failed to start chat");
+        }
+    };
+
     return (
         <div className="min-h-screen bg-transparent pt-24 pb-12 px-4 sm:px-6 lg:px-8 relative">
             <div className="max-w-6xl mx-auto h-[80vh] flex gap-4 bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl overflow-hidden border border-white/50">
                 {/* Conversations List */}
                 <div className="w-1/3 border-r border-gray-100 bg-gray-50/50 flex flex-col">
-                    <div className="p-4 border-b border-gray-100">
+                    <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-white">
                         <h2 className="font-bold text-gray-700 flex items-center gap-2">
-                            <MessageSquare className="w-5 h-5" /> Chats
+                            <MessageSquare className="w-5 h-5 text-primary-600" /> Chats
                         </h2>
+                        <button
+                            onClick={handleOpenNewChat}
+                            className="p-2 bg-primary-50 text-primary-600 rounded-full hover:bg-primary-100 transition-colors"
+                            title="New Chat"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14" /></svg>
+                        </button>
                     </div>
                     <div className="flex-1 overflow-y-auto">
                         {conversations.length === 0 ? (
@@ -157,6 +219,49 @@ const Chat = () => {
                     )}
                 </div>
             </div>
+            {/* New Chat Modal */}
+            {showNewChatModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={() => setShowNewChatModal(false)}>
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden"
+                        onClick={e => e.stopPropagation()}
+                    >
+                        <div className="p-4 border-b border-gray-100 flex justify-between items-center">
+                            <h3 className="font-bold text-gray-900">New Message</h3>
+                            <button onClick={() => setShowNewChatModal(false)} className="text-gray-400 hover:text-gray-600">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><path d="m15 9-6 6" /><path d="m9 9 6 6" /></svg>
+                            </button>
+                        </div>
+                        <div className="max-h-[60vh] overflow-y-auto p-2">
+                            {loadingContacts ? (
+                                <div className="p-8 text-center text-gray-500">Loading contacts...</div>
+                            ) : contacts.length === 0 ? (
+                                <div className="p-8 text-center text-gray-500">No contacts found to chat with.</div>
+                            ) : (
+                                <div className="space-y-1">
+                                    {contacts.map(contact => (
+                                        <div
+                                            key={contact._id}
+                                            onClick={() => handleUserSelect(contact._id)}
+                                            className="flex items-center gap-3 p-3 hover:bg-gray-50 rounded-xl cursor-pointer transition-colors"
+                                        >
+                                            <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold shrink-0">
+                                                {contact.name.charAt(0)}
+                                            </div>
+                                            <div className="min-w-0">
+                                                <p className="font-medium text-gray-900 truncate">{contact.organizationName || contact.name}</p>
+                                                <p className="text-xs text-gray-500 capitalize">{contact.role}</p>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    </motion.div>
+                </div>
+            )}
         </div>
     );
 };

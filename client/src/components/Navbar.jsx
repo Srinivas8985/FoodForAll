@@ -30,81 +30,78 @@ const Navbar = () => {
                     </Link>
 
                     {/* Desktop Menu */}
-                    <div className="hidden md:flex items-center space-x-8">
-                        <Link to="/" className="text-gray-600 font-medium hover:text-primary-600 transition-colors relative group">
+                    <div className="hidden md:flex items-center gap-6 lg:gap-8">
+                        <Link to="/" className="text-gray-600 font-medium hover:text-primary-600 transition-colors relative group whitespace-nowrap">
                             Home
                             <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary-600 transition-all group-hover:w-full"></span>
                         </Link>
-                        <Link to="/find-food" className="text-gray-600 font-medium hover:text-primary-600 transition-colors relative group">
+                        <Link to="/find-food" className="text-gray-600 font-medium hover:text-primary-600 transition-colors relative group whitespace-nowrap">
                             Find Food
                             <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary-600 transition-all group-hover:w-full"></span>
                         </Link>
-                        <Link to="/about" className="text-gray-600 font-medium hover:text-primary-600 transition-colors relative group">
+                        <Link to="/about" className="text-gray-600 font-medium hover:text-primary-600 transition-colors relative group whitespace-nowrap">
                             About
                             <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary-600 transition-all group-hover:w-full"></span>
                         </Link>
 
-                        <Link to="/listings" className="text-gray-600 font-medium hover:text-primary-600 transition-colors">Available Food</Link>
+                        <Link to="/listings" className="text-gray-600 font-medium hover:text-primary-600 transition-colors whitespace-nowrap">Available Food</Link>
 
                         {user ? (
-                            <>
+                            <div className="flex items-center gap-4">
                                 {user.role === 'donor' && (
                                     <>
-                                        <Link to="/donate" className="text-gray-600 font-medium hover:text-primary-600 transition-colors">Donate Food</Link>
-                                        <Link to="/donate-money" className="text-gray-600 font-medium hover:text-primary-600 transition-colors">Donate Money</Link>
+                                        <Link to="/donate" className="text-gray-600 font-medium hover:text-primary-600 transition-colors whitespace-nowrap">Donate Food</Link>
+                                        <Link to="/donate-money" className="text-gray-600 font-medium hover:text-primary-600 transition-colors whitespace-nowrap">Donate Money</Link>
                                     </>
-                                )}
-                                {user && (
-                                    <Link to="/notifications" className="text-gray-600 hover:text-primary-600 px-3 py-2 rounded-md font-medium transition-colors flex items-center gap-1">
-                                        <span className="relative">
-                                            🔔
-                                            {unreadNotifications > 0 && (
-                                                <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] text-white font-bold ring-2 ring-white">
-                                                    {unreadNotifications > 9 ? '9+' : unreadNotifications}
-                                                </span>
-                                            )}
-                                        </span>
-                                    </Link>
-                                )}
-                                {user && (
-                                    <Link to="/chat" className="text-gray-600 hover:text-primary-600 px-3 py-2 rounded-md font-medium transition-colors flex items-center gap-1">
-                                        <span className="relative">
-                                            💬
-                                        </span>
-                                    </Link>
                                 )}
                                 {(user.role === 'ngo') && (
                                     <>
-                                        <Link to="/request" className="text-gray-600 font-medium hover:text-primary-600 transition-colors">Request</Link>
-                                        <Link to="/ngo/log-distribution" className="text-gray-600 font-medium hover:text-primary-600 transition-colors">Log Distribution</Link>
+                                        <Link to="/request" className="text-gray-600 font-medium hover:text-primary-600 transition-colors whitespace-nowrap">Request</Link>
+                                        <Link to="/ngo/log-distribution" className="text-gray-600 font-medium hover:text-primary-600 transition-colors whitespace-nowrap">Log Dist.</Link>
                                     </>
                                 )}
                                 {(user.role === 'admin') && (
                                     <>
-                                        <Link to="/admin/hunger-dashboard" className="text-gray-600 font-medium hover:text-primary-600 transition-colors">Hunger Dashboard</Link>
-                                        <Link to="/admin/plan-drive" className="text-gray-600 font-medium hover:text-primary-600 transition-colors">Plan Drive</Link>
-                                        <Link to="/admin/verification" className="text-gray-600 font-medium hover:text-primary-600 transition-colors">Verifications</Link>
+                                        <Link to="/admin/hunger-dashboard" className="text-gray-600 font-medium hover:text-primary-600 transition-colors whitespace-nowrap">Dashboard</Link>
+                                        <Link to="/admin/verification" className="text-gray-600 font-medium hover:text-primary-600 transition-colors whitespace-nowrap">Verify</Link>
                                     </>
                                 )}
 
-                                <div className="relative group ml-4 h-10 flex items-center">
-                                    <button className="flex items-center space-x-2 py-2 px-4 rounded-full bg-primary-50 text-primary-700 hover:bg-primary-100 transition-all border border-primary-100">
-                                        <User className="h-5 w-5" />
-                                        <span className="font-medium">{user.name.split(' ')[0]}</span>
+                                <div className="flex items-center gap-2 border-l border-gray-200 pl-4">
+                                    <Link to="/notifications" className="text-gray-500 hover:text-primary-600 p-2 rounded-full hover:bg-gray-50 transition-colors relative">
+                                        <span className="text-xl">🔔</span>
+                                        {unreadNotifications > 0 && (
+                                            <span className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] text-white font-bold ring-2 ring-white">
+                                                {unreadNotifications > 9 ? '9+' : unreadNotifications}
+                                            </span>
+                                        )}
+                                    </Link>
+
+                                    <Link to="/chat" className="text-gray-500 hover:text-primary-600 p-2 rounded-full hover:bg-gray-50 transition-colors relative">
+                                        <span className="text-xl">💬</span>
+                                    </Link>
+                                </div>
+
+                                <div className="relative group flex items-center">
+                                    <button className="flex items-center gap-2 py-1.5 px-3 rounded-full bg-primary-50 text-primary-700 hover:bg-primary-100 transition-all border border-primary-100">
+                                        <div className="w-8 h-8 rounded-full bg-primary-200 flex items-center justify-center text-primary-700">
+                                            <User className="h-4 w-4" />
+                                        </div>
+                                        <span className="font-medium text-sm hidden lg:block">{user.name.split(' ')[0]}</span>
                                     </button>
                                     {/* Invisible bridge to prevent closing */}
-                                    <div className="absolute top-10 w-full h-4 bg-transparent"></div>
+                                    <div className="absolute top-full w-full h-4 bg-transparent"></div>
 
-                                    <div className="hidden group-hover:block absolute right-0 top-12 w-48 bg-white/95 backdrop-blur-md rounded-xl shadow-xl py-2 ring-1 ring-black ring-opacity-5 transform origin-top-right transition-all animate-in fade-in zoom-in-95 duration-200">
-                                        <Link to="/dashboard" className="block px-4 py-2 text-sm text-gray-700 hover:bg-primary-50 hover:text-primary-700">Dashboard</Link>
+                                    <div className="hidden group-hover:block absolute right-0 top-[calc(100%+0.5rem)] w-48 bg-white/95 backdrop-blur-md rounded-xl shadow-xl py-2 ring-1 ring-black ring-opacity-5 transform origin-top-right transition-all animate-in fade-in zoom-in-95 duration-200">
+                                        <Link to="/dashboard" className="block px-4 py-2 text-sm text-gray-700 hover:bg-primary-50 hover:text-primary-700">My Dashboard</Link>
                                         <button onClick={handleLogout} className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50">
                                             <LogOut className="h-4 w-4 mr-2" /> Logout
                                         </button>
                                     </div>
                                 </div>
-                            </>
+                            </div>
                         ) : (
-                            <div className="flex items-center space-x-4">
+                            <div className="flex items-center gap-4">
                                 <Link to="/login" className="text-gray-600 font-medium hover:text-primary-600 transition-colors">Login</Link>
                                 <Link to="/signup" className="px-5 py-2.5 rounded-full bg-gradient-to-r from-primary-600 to-accent-600 text-white font-medium hover:shadow-lg hover:shadow-primary-500/30 transition-all transform hover:-translate-y-0.5">
                                     Get Started

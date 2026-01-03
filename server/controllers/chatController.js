@@ -72,12 +72,28 @@ exports.addMessage = async (req, res) => {
 // @desc    Get messages of a conversation
 // @route   GET /api/chat/message/:conversationId
 // @access  Private
-exports.getMessages = async (req, res) => {
+// @desc    Get contacts for checking new chat
+// @route   GET /api/chat/contacts
+// @access  Private
+exports.getChatContacts = async (req, res) => {
     try {
-        const messages = await Message.find({
-            conversationId: req.params.conversationId,
-        });
-        res.status(200).json(messages);
+        const currentUser = await User.findById(req.user.id);
+        let contacts = [];
+
+        if (currentUser.role === 'admin') {
+            // Admins can chat with all Verified NGOs
+            contacts = await User.find({ role: 'ngo', verificationStatus: 'approved' }).select('name email role organizationName mobile');
+        } else if (currentUser.role === 'ngo') {
+            // NGOs can chat with Admins
+            contacts = await User.find({ role: 'admin' }).select('name email role');
+        } else if (currentUser.role === 'donor') {
+            // Donors can chat with Verified NGOs and Admins
+            const ngos = await User.find({ role: 'ngo', verificationStatus: 'approved' }).select('name email role organizationName');
+            const admins = await User.find({ role: 'admin' }).select('name email role');
+            contacts = [...ngos, ...admins];
+        }
+
+        res.status(200).json(contacts);
     } catch (err) {
         res.status(500).json({ status: false, message: err.message });
     }

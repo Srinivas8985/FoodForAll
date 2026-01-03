@@ -145,6 +145,35 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
+    // Idle Timeout Logic (30 minutes)
+    useEffect(() => {
+        let timeoutId;
+
+        const resetTimer = () => {
+            if (user) {
+                clearTimeout(timeoutId);
+                timeoutId = setTimeout(() => {
+                    toast.error("Session timed out due to inactivity.");
+                    logout();
+                    // Redirect is handled by logout or state change usually, but we can force it
+                    setTimeout(() => window.location.href = '/login', 1000);
+                }, 30 * 60 * 1000); // 30 minutes
+            }
+        };
+
+        const events = ['mousedown', 'keydown', 'scroll', 'touchstart'];
+
+        if (user) {
+            resetTimer(); // Start timer
+            events.forEach(event => window.addEventListener(event, resetTimer));
+        }
+
+        return () => {
+            clearTimeout(timeoutId);
+            events.forEach(event => window.removeEventListener(event, resetTimer));
+        };
+    }, [user]);
+
     // Login User
     const login = async (email, password) => {
         try {
