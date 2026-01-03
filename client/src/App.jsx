@@ -18,6 +18,7 @@ import HungerDashboard from './pages/admin/HungerDashboard';
 import FoodDrivePlanning from './pages/admin/FoodDrivePlanning';
 import VerificationDashboard from './pages/admin/VerificationDashboard';
 import FindFood from './pages/public/FindFood';
+import Chat from './pages/Chat';
 import { useAuth } from './context/AuthContext';
 
 import About from './pages/About';
@@ -74,6 +75,14 @@ function App() {
                     element={
                         <ProtectedRoute allowedRoles={['donor', 'admin']}> {/* Changed ProtectedRoute to PrivateRoute */}
                             <DonateFood />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/chat"
+                    element={
+                        <ProtectedRoute>
+                            <Chat />
                         </ProtectedRoute>
                     }
                 />

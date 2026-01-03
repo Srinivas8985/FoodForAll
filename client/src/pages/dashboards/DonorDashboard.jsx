@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Plus, Gift, Clock, TrendingUp, List } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
@@ -12,6 +12,7 @@ import ViewProofModal from '../../components/ViewProofModal';
 
 const DonorDashboard = () => {
     const { user, api } = useAuth();
+    const navigate = useNavigate();
     const [stats, setStats] = useState({
         totalDonations: 0,
         activeDonations: 0
@@ -19,6 +20,18 @@ const DonorDashboard = () => {
     const [myItems, setMyItems] = useState([]);
     const [loading, setLoading] = useState(true);
     const [viewingProof, setViewingProof] = useState(null);
+
+    const handleStartChat = async (recipientId) => {
+        try {
+            await api.post('/chat/conversation', {
+                senderId: user._id,
+                receiverId: recipientId
+            });
+            navigate('/chat');
+        } catch (err) {
+            console.error(err);
+        }
+    };
 
     useEffect(() => {
         const fetchData = async () => {

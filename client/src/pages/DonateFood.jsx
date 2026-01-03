@@ -9,6 +9,20 @@ const DonateFood = () => {
     const { api } = useAuth();
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
+
+    const handleStartChat = async (ngoId) => {
+        try {
+            const res = await api.post('/chat/conversation', {
+                senderId: user._id,
+                receiverId: ngoId
+            });
+            navigate('/chat');
+        } catch (err) {
+            console.error(err);
+            toast.error("Failed to start chat");
+        }
+    };
+
     const [formData, setFormData] = useState({
         foodName: '',
         quantity: '',
@@ -196,6 +210,13 @@ const DonateFood = () => {
                                                 <div className="flex gap-4 mt-3 text-sm text-gray-500">
                                                     <span className="flex items-center gap-1"><Phone className="w-3 h-3" /> {verifiedNGOs.find(n => n._id === recipientId).phone}</span>
                                                 </div>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleStartChat(recipientId)}
+                                                    className="mt-3 text-sm flex items-center gap-1 text-primary-600 hover:text-primary-700 font-medium"
+                                                >
+                                                    <MessageSquare className="w-4 h-4" /> Message NGO
+                                                </button>
                                             </div>
                                         </div>
                                     )}

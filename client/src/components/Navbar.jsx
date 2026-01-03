@@ -66,6 +66,13 @@ const Navbar = () => {
                                         </span>
                                     </Link>
                                 )}
+                                {user && (
+                                    <Link to="/chat" className="text-gray-600 hover:text-primary-600 px-3 py-2 rounded-md font-medium transition-colors flex items-center gap-1">
+                                        <span className="relative">
+                                            💬
+                                        </span>
+                                    </Link>
+                                )}
                                 {(user.role === 'ngo') && (
                                     <>
                                         <Link to="/request" className="text-gray-600 font-medium hover:text-primary-600 transition-colors">Request</Link>
